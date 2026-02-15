@@ -34,6 +34,27 @@
             margin-bottom: 10px;
         }
         
+        .currency-selector {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        
+        .currency-selector label {
+            margin-right: 10px;
+            font-weight: 600;
+        }
+        
+        .currency-selector select {
+            padding: 8px 15px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -89,6 +110,14 @@
             font-weight: bold;
         }
         
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
         .btn-add {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -97,14 +126,29 @@
             font-size: 1.1em;
             border-radius: 30px;
             cursor: pointer;
-            display: block;
-            margin: 0 auto 30px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             transition: transform 0.2s;
         }
         
         .btn-add:hover {
             transform: scale(1.05);
+        }
+        
+        .btn-export {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .btn-export:hover {
+            background: #667eea;
+            color: white;
         }
         
         .form-container {
@@ -155,6 +199,45 @@
             gap: 15px;
         }
         
+        .custom-category-section {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .custom-category-section.active {
+            display: block;
+        }
+        
+        .icon-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .icon-option {
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 2em;
+            transition: all 0.2s;
+        }
+        
+        .icon-option:hover {
+            border-color: #667eea;
+            background: #f0f0ff;
+        }
+        
+        .icon-option.selected {
+            border-color: #667eea;
+            background: #667eea;
+        }
+        
         .btn-group {
             display: flex;
             gap: 10px;
@@ -186,11 +269,43 @@
             color: #333;
         }
         
-        .filter-buttons {
+        .time-filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .time-filters {
             display: flex;
             gap: 10px;
             justify-content: center;
-            margin-bottom: 30px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        
+        .time-filter-btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 25px;
+            background: #f3f4f6;
+            color: #333;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .time-filter-btn.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .type-filters {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
             flex-wrap: wrap;
         }
         
@@ -203,11 +318,13 @@
             cursor: pointer;
             font-weight: 600;
             transition: all 0.2s;
+            border: 2px solid #e5e7eb;
         }
         
         .filter-btn.active {
             background: #667eea;
             color: white;
+            border-color: #667eea;
         }
         
         .transactions-container {
@@ -217,8 +334,16 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
         
-        .transactions-container h2 {
+        .transactions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .transactions-container h2 {
             color: #333;
         }
         
@@ -240,6 +365,13 @@
         .transaction-info h4 {
             margin-bottom: 5px;
             color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .transaction-icon {
+            font-size: 1.5em;
         }
         
         .transaction-details {
@@ -248,6 +380,7 @@
             font-size: 0.9em;
             color: #666;
             margin-top: 5px;
+            flex-wrap: wrap;
         }
         
         .transaction-amount {
@@ -292,6 +425,52 @@
             margin-right: 10px;
         }
         
+        .export-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .export-menu {
+            display: none;
+            position: absolute;
+            background: white;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            border-radius: 8px;
+            min-width: 150px;
+            z-index: 1000;
+            top: 100%;
+            right: 0;
+            margin-top: 5px;
+        }
+        
+        .export-menu.active {
+            display: block;
+        }
+        
+        .export-menu button {
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            background: white;
+            text-align: left;
+            cursor: pointer;
+            font-weight: 600;
+            color: #333;
+            transition: background 0.2s;
+        }
+        
+        .export-menu button:hover {
+            background: #f3f4f6;
+        }
+        
+        .export-menu button:first-child {
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .export-menu button:last-child {
+            border-radius: 0 0 8px 8px;
+        }
+        
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 1.8em;
@@ -311,6 +490,14 @@
                 width: 100%;
                 justify-content: space-between;
             }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn-add, .btn-export {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -319,6 +506,27 @@
         <div class="header">
             <h1>💰 Money Tracker Pro</h1>
             <p>Track your income, expenses, fuel, and mileage</p>
+            <div class="currency-selector">
+                <label>Currency:</label>
+                <select id="currencySelect" onchange="changeCurrency()">
+                    <option value="USD" data-symbol="$">USD ($)</option>
+                    <option value="EUR" data-symbol="€">EUR (€)</option>
+                    <option value="GBP" data-symbol="£">GBP (£)</option>
+                    <option value="JPY" data-symbol="¥">JPY (¥)</option>
+                    <option value="CNY" data-symbol="¥">CNY (¥)</option>
+                    <option value="INR" data-symbol="₹">INR (₹)</option>
+                    <option value="AUD" data-symbol="A$">AUD (A$)</option>
+                    <option value="CAD" data-symbol="C$">CAD (C$)</option>
+                    <option value="CHF" data-symbol="CHF">CHF (CHF)</option>
+                    <option value="AED" data-symbol="AED">AED (AED)</option>
+                    <option value="SAR" data-symbol="SAR">SAR (SAR)</option>
+                    <option value="BRL" data-symbol="R$">BRL (R$)</option>
+                    <option value="MXN" data-symbol="MX$">MXN (MX$)</option>
+                    <option value="KRW" data-symbol="₩">KRW (₩)</option>
+                    <option value="SGD" data-symbol="S$">SGD (S$)</option>
+                    <option value="ZAR" data-symbol="R">ZAR (R)</option>
+                </select>
+            </div>
         </div>
         
         <div class="stats-grid">
@@ -345,7 +553,17 @@
             <div class="amount" id="balance">$0.00</div>
         </div>
         
-        <button class="btn-add" onclick="toggleForm()">➕ Add Transaction</button>
+        <div class="action-buttons">
+            <button class="btn-add" onclick="toggleForm()">➕ Add Transaction</button>
+            <div class="export-dropdown">
+                <button class="btn-export" onclick="toggleExportMenu()">📥 Export Data</button>
+                <div class="export-menu" id="exportMenu">
+                    <button onclick="exportCSV()">Export as CSV</button>
+                    <button onclick="exportExcel()">Export as Excel</button>
+                    <button onclick="exportJSON()">Export as JSON</button>
+                </div>
+            </div>
+        </div>
         
         <div class="form-container" id="formContainer">
             <h2>New Transaction</h2>
@@ -362,17 +580,30 @@
                     
                     <div class="form-group">
                         <label>Category</label>
-                        <select id="category"></select>
+                        <select id="category" onchange="checkCustomCategory()"></select>
                     </div>
                     
                     <div class="form-group">
-                        <label>Amount ($)</label>
+                        <label>Amount</label>
                         <input type="number" id="amount" step="0.01" required placeholder="0.00">
                     </div>
                     
                     <div class="form-group">
                         <label>Date</label>
                         <input type="date" id="date" required>
+                    </div>
+                </div>
+                
+                <div class="custom-category-section" id="customCategorySection">
+                    <div class="form-group">
+                        <label>Custom Category Name</label>
+                        <input type="text" id="customCategoryName" placeholder="e.g., Pet Care, Subscriptions">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Choose Icon</label>
+                        <div class="icon-selector" id="iconSelector"></div>
+                        <input type="hidden" id="selectedIcon">
                     </div>
                 </div>
                 
@@ -405,15 +636,29 @@
             </form>
         </div>
         
-        <div class="filter-buttons">
-            <button class="filter-btn active" onclick="filterTransactions('all')">All</button>
-            <button class="filter-btn" onclick="filterTransactions('income')">Income</button>
-            <button class="filter-btn" onclick="filterTransactions('expense')">Expenses</button>
-            <button class="filter-btn" onclick="filterTransactions('fuel')">Fuel</button>
+        <div class="time-filter-section">
+            <div class="time-filters">
+                <button class="time-filter-btn" onclick="filterByTime('today')">Today</button>
+                <button class="time-filter-btn" onclick="filterByTime('yesterday')">Yesterday</button>
+                <button class="time-filter-btn" onclick="filterByTime('week')">This Week</button>
+                <button class="time-filter-btn" onclick="filterByTime('month')">This Month</button>
+                <button class="time-filter-btn" onclick="filterByTime('year')">This Year</button>
+                <button class="time-filter-btn active" onclick="filterByTime('all')">All Time</button>
+            </div>
+            
+            <div class="type-filters">
+                <button class="filter-btn active" onclick="filterTransactions('all')">All</button>
+                <button class="filter-btn" onclick="filterTransactions('income')">Income</button>
+                <button class="filter-btn" onclick="filterTransactions('expense')">Expenses</button>
+                <button class="filter-btn" onclick="filterTransactions('fuel')">Fuel</button>
+            </div>
         </div>
         
         <div class="transactions-container">
-            <h2>Transaction History</h2>
+            <div class="transactions-header">
+                <h2>Transaction History</h2>
+                <div id="transactionCount" style="color: #666; font-weight: 600;"></div>
+            </div>
             <div id="transactionsList">
                 <div class="empty-state">No transactions yet. Add your first one!</div>
             </div>
@@ -421,27 +666,112 @@
     </div>
 
     <script>
-        const categories = {
-            income: ['salary', 'freelance', 'investment', 'gift', 'other'],
-            expense: ['food', 'transport', 'utilities', 'entertainment', 'shopping', 'health', 'education', 'other'],
-            fuel: ['petrol', 'diesel', 'electric']
+        // Available icons for custom categories
+        const availableIcons = [
+            '🏠', '🏥', '🎓', '🍔', '🚗', '✈️', '🎬', '🎮', '🎵', '📱', 
+            '💻', '📚', '🛒', '👕', '👟', '💊', '🐕', '🐱', '🌿', '🏋️',
+            '⚽', '🎨', '🎪', '🎭', '📸', '🎤', '🎸', '🎹', '🎯', '🎲',
+            '☕', '🍕', '🍜', '🍰', '🍺', '💼', '👔', '💄', '💍', '🎁',
+            '📦', '🔧', '🔨', '🏡', '🌳', '💐', '🚲', '🏍️', '🛴', '🚁'
+        ];
+        
+        const defaultCategories = {
+            income: [
+                {name: 'salary', icon: '💼'},
+                {name: 'freelance', icon: '💻'},
+                {name: 'investment', icon: '📈'},
+                {name: 'gift', icon: '🎁'},
+                {name: 'bonus', icon: '💰'},
+                {name: 'refund', icon: '💵'},
+                {name: 'other', icon: '💳'}
+            ],
+            expense: [
+                {name: 'food', icon: '🍔'},
+                {name: 'groceries', icon: '🛒'},
+                {name: 'transport', icon: '🚗'},
+                {name: 'utilities', icon: '💡'},
+                {name: 'entertainment', icon: '🎬'},
+                {name: 'shopping', icon: '🛍️'},
+                {name: 'health', icon: '🏥'},
+                {name: 'education', icon: '🎓'},
+                {name: 'insurance', icon: '🛡️'},
+                {name: 'rent', icon: '🏠'},
+                {name: 'bills', icon: '📄'},
+                {name: 'gym', icon: '🏋️'},
+                {name: 'clothing', icon: '👕'},
+                {name: 'beauty', icon: '💄'},
+                {name: 'pets', icon: '🐕'},
+                {name: 'gifts', icon: '🎁'},
+                {name: 'travel', icon: '✈️'},
+                {name: 'dining', icon: '🍽️'},
+                {name: 'coffee', icon: '☕'},
+                {name: 'subscriptions', icon: '📱'},
+                {name: 'custom', icon: '➕'},
+                {name: 'other', icon: '📦'}
+            ],
+            fuel: [
+                {name: 'petrol', icon: '⛽'},
+                {name: 'diesel', icon: '⛽'},
+                {name: 'electric', icon: '🔌'},
+                {name: 'other', icon: '🚗'}
+            ]
         };
         
         const categoryColors = {
             salary: '#10b981', freelance: '#059669', investment: '#14b8a6', gift: '#06b6d4',
             food: '#f59e0b', transport: '#3b82f6', utilities: '#8b5cf6', entertainment: '#ec4899',
             shopping: '#f97316', health: '#ef4444', education: '#6366f1', petrol: '#dc2626',
-            diesel: '#7c2d12', electric: '#65a30d', other: '#6b7280'
+            diesel: '#7c2d12', electric: '#65a30d', groceries: '#84cc16', insurance: '#0ea5e9',
+            rent: '#8b5cf6', bills: '#f59e0b', gym: '#22c55e', clothing: '#ec4899',
+            beauty: '#f472b6', pets: '#fb923c', gifts: '#a855f7', travel: '#06b6d4',
+            dining: '#f97316', coffee: '#78350f', subscriptions: '#6366f1', bonus: '#10b981',
+            refund: '#14b8a6', other: '#6b7280', custom: '#667eea'
         };
         
         let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+        let customCategories = JSON.parse(localStorage.getItem('customCategories')) || {};
         let currentFilter = 'all';
+        let currentTimeFilter = 'all';
+        let currentCurrency = localStorage.getItem('currency') || 'USD';
+        let currencySymbol = '$';
         
         function init() {
             document.getElementById('date').valueAsDate = new Date();
+            loadCurrency();
+            renderIconSelector();
             updateCategories();
             updateStats();
             renderTransactions();
+        }
+        
+        function loadCurrency() {
+            const select = document.getElementById('currencySelect');
+            select.value = currentCurrency;
+            const option = select.options[select.selectedIndex];
+            currencySymbol = option.dataset.symbol;
+        }
+        
+        function changeCurrency() {
+            const select = document.getElementById('currencySelect');
+            currentCurrency = select.value;
+            const option = select.options[select.selectedIndex];
+            currencySymbol = option.dataset.symbol;
+            localStorage.setItem('currency', currentCurrency);
+            updateStats();
+            renderTransactions();
+        }
+        
+        function renderIconSelector() {
+            const selector = document.getElementById('iconSelector');
+            selector.innerHTML = availableIcons.map(icon => 
+                `<div class="icon-option" onclick="selectIcon('${icon}')">${icon}</div>`
+            ).join('');
+        }
+        
+        function selectIcon(icon) {
+            document.querySelectorAll('.icon-option').forEach(el => el.classList.remove('selected'));
+            event.target.classList.add('selected');
+            document.getElementById('selectedIcon').value = icon;
         }
         
         function updateCategories() {
@@ -450,34 +780,89 @@
             const fuelFields = document.getElementById('fuelFields');
             
             categorySelect.innerHTML = '';
-            categories[type].forEach(cat => {
+            
+            // Add default categories
+            defaultCategories[type].forEach(cat => {
                 const option = document.createElement('option');
-                option.value = cat;
-                option.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+                option.value = cat.name;
+                option.textContent = cat.icon + ' ' + cat.name.charAt(0).toUpperCase() + cat.name.slice(1);
+                option.dataset.icon = cat.icon;
                 categorySelect.appendChild(option);
             });
             
+            // Add custom categories for this type
+            if (customCategories[type]) {
+                customCategories[type].forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat.name;
+                    option.textContent = cat.icon + ' ' + cat.name;
+                    option.dataset.icon = cat.icon;
+                    option.dataset.custom = 'true';
+                    categorySelect.appendChild(option);
+                });
+            }
+            
             fuelFields.style.display = type === 'fuel' ? 'grid' : 'none';
+            checkCustomCategory();
+        }
+        
+        function checkCustomCategory() {
+            const category = document.getElementById('category').value;
+            const customSection = document.getElementById('customCategorySection');
+            customSection.classList.toggle('active', category === 'custom');
         }
         
         function toggleForm() {
             const form = document.getElementById('formContainer');
             form.classList.toggle('active');
+            if (form.classList.contains('active')) {
+                document.getElementById('customCategorySection').classList.remove('active');
+            }
         }
         
         function addTransaction(e) {
             e.preventDefault();
             
+            const type = document.getElementById('type').value;
+            let category = document.getElementById('category').value;
+            let categoryIcon = document.getElementById('category').selectedOptions[0].dataset.icon;
+            
+            // Handle custom category
+            if (category === 'custom') {
+                const customName = document.getElementById('customCategoryName').value.trim();
+                const customIcon = document.getElementById('selectedIcon').value;
+                
+                if (!customName || !customIcon) {
+                    alert('Please enter a category name and select an icon');
+                    return;
+                }
+                
+                category = customName.toLowerCase().replace(/\s+/g, '-');
+                categoryIcon = customIcon;
+                
+                // Save custom category
+                if (!customCategories[type]) {
+                    customCategories[type] = [];
+                }
+                if (!customCategories[type].find(c => c.name === customName)) {
+                    customCategories[type].push({name: customName, icon: customIcon});
+                    localStorage.setItem('customCategories', JSON.stringify(customCategories));
+                    categoryColors[category] = '#667eea';
+                }
+            }
+            
             const transaction = {
                 id: Date.now(),
-                type: document.getElementById('type').value,
-                category: document.getElementById('category').value,
+                type: type,
+                category: category,
+                categoryIcon: categoryIcon,
                 amount: parseFloat(document.getElementById('amount').value),
                 date: document.getElementById('date').value,
                 description: document.getElementById('description').value,
                 notes: document.getElementById('notes').value,
                 mileage: document.getElementById('mileage').value ? parseFloat(document.getElementById('mileage').value) : null,
-                fuelAmount: document.getElementById('fuelAmount').value ? parseFloat(document.getElementById('fuelAmount').value) : null
+                fuelAmount: document.getElementById('fuelAmount').value ? parseFloat(document.getElementById('fuelAmount').value) : null,
+                currency: currentCurrency
             };
             
             transactions.unshift(transaction);
@@ -485,7 +870,11 @@
             
             document.getElementById('transactionForm').reset();
             document.getElementById('date').valueAsDate = new Date();
+            document.getElementById('customCategoryName').value = '';
+            document.getElementById('selectedIcon').value = '';
+            document.querySelectorAll('.icon-option').forEach(el => el.classList.remove('selected'));
             toggleForm();
+            updateCategories();
             updateStats();
             renderTransactions();
         }
@@ -500,17 +889,18 @@
         }
         
         function updateStats() {
-            const income = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
-            const expense = transactions.filter(t => t.type === 'expense' || t.type === 'fuel').reduce((sum, t) => sum + t.amount, 0);
-            const fuel = transactions.filter(t => t.type === 'fuel').reduce((sum, t) => sum + t.amount, 0);
-            const mileage = transactions.filter(t => t.mileage).reduce((sum, t) => sum + t.mileage, 0);
+            const filtered = getFilteredTransactions();
+            const income = filtered.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            const expense = filtered.filter(t => t.type === 'expense' || t.type === 'fuel').reduce((sum, t) => sum + t.amount, 0);
+            const fuel = filtered.filter(t => t.type === 'fuel').reduce((sum, t) => sum + t.amount, 0);
+            const mileage = filtered.filter(t => t.mileage).reduce((sum, t) => sum + t.mileage, 0);
             const balance = income - expense;
             
-            document.getElementById('totalIncome').textContent = '$' + income.toFixed(2);
-            document.getElementById('totalExpense').textContent = '$' + expense.toFixed(2);
-            document.getElementById('totalFuel').textContent = '$' + fuel.toFixed(2);
+            document.getElementById('totalIncome').textContent = currencySymbol + income.toFixed(2);
+            document.getElementById('totalExpense').textContent = currencySymbol + expense.toFixed(2);
+            document.getElementById('totalFuel').textContent = currencySymbol + fuel.toFixed(2);
             document.getElementById('totalMileage').textContent = mileage.toFixed(1) + ' mi';
-            document.getElementById('balance').textContent = '$' + balance.toFixed(2);
+            document.getElementById('balance').textContent = currencySymbol + balance.toFixed(2);
             
             const balanceCard = document.getElementById('balanceCard');
             if (balance < 0) {
@@ -518,6 +908,18 @@
             } else {
                 balanceCard.classList.remove('negative');
             }
+        }
+        
+        function filterByTime(period) {
+            currentTimeFilter = period;
+            
+            document.querySelectorAll('.time-filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            updateStats();
+            renderTransactions();
         }
         
         function filterTransactions(filter) {
@@ -531,14 +933,56 @@
             renderTransactions();
         }
         
+        function getFilteredTransactions() {
+            let filtered = transactions;
+            
+            // Time filter
+            if (currentTimeFilter !== 'all') {
+                const now = new Date();
+                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                
+                filtered = filtered.filter(t => {
+                    const transDate = new Date(t.date);
+                    
+                    switch(currentTimeFilter) {
+                        case 'today':
+                            return transDate >= today;
+                        case 'yesterday':
+                            const yesterday = new Date(today);
+                            yesterday.setDate(yesterday.getDate() - 1);
+                            return transDate >= yesterday && transDate < today;
+                        case 'week':
+                            const weekAgo = new Date(today);
+                            weekAgo.setDate(weekAgo.getDate() - 7);
+                            return transDate >= weekAgo;
+                        case 'month':
+                            return transDate.getMonth() === now.getMonth() && 
+                                   transDate.getFullYear() === now.getFullYear();
+                        case 'year':
+                            return transDate.getFullYear() === now.getFullYear();
+                        default:
+                            return true;
+                    }
+                });
+            }
+            
+            // Type filter
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(t => t.type === currentFilter);
+            }
+            
+            return filtered;
+        }
+        
         function renderTransactions() {
             const container = document.getElementById('transactionsList');
-            const filtered = currentFilter === 'all' 
-                ? transactions 
-                : transactions.filter(t => t.type === currentFilter);
+            const filtered = getFilteredTransactions();
+            
+            document.getElementById('transactionCount').textContent = 
+                `${filtered.length} transaction${filtered.length !== 1 ? 's' : ''}`;
             
             if (filtered.length === 0) {
-                container.innerHTML = '<div class="empty-state">No transactions found.</div>';
+                container.innerHTML = '<div class="empty-state">No transactions found for this filter.</div>';
                 return;
             }
             
@@ -546,7 +990,8 @@
                 <div class="transaction ${t.type}-type">
                     <div class="transaction-info">
                         <h4>
-                            <span class="category-badge" style="background: ${categoryColors[t.category]}">${t.category}</span>
+                            <span class="transaction-icon">${t.categoryIcon}</span>
+                            <span class="category-badge" style="background: ${categoryColors[t.category] || '#6b7280'}">${t.category}</span>
                             ${t.description || t.category}
                         </h4>
                         <div class="transaction-details">
@@ -558,13 +1003,111 @@
                     </div>
                     <div class="transaction-amount">
                         <div class="amount ${t.type === 'income' ? 'income' : 'expense'}">
-                            ${t.type === 'income' ? '+' : '-'}$${t.amount.toFixed(2)}
+                            ${t.type === 'income' ? '+' : '-'}${currencySymbol}${t.amount.toFixed(2)}
                         </div>
                         <button class="btn-delete" onclick="deleteTransaction(${t.id})">Delete</button>
                     </div>
                 </div>
             `).join('');
         }
+        
+        function toggleExportMenu() {
+            const menu = document.getElementById('exportMenu');
+            menu.classList.toggle('active');
+        }
+        
+        function exportCSV() {
+            const filtered = getFilteredTransactions();
+            if (filtered.length === 0) {
+                alert('No transactions to export');
+                return;
+            }
+            
+            const headers = ['Date', 'Type', 'Category', 'Description', 'Amount', 'Currency', 'Mileage', 'Fuel Amount', 'Notes'];
+            const csv = [
+                headers.join(','),
+                ...filtered.map(t => [
+                    t.date,
+                    t.type,
+                    t.category,
+                    `"${t.description || ''}"`,
+                    t.amount,
+                    t.currency || currentCurrency,
+                    t.mileage || '',
+                    t.fuelAmount || '',
+                    `"${t.notes || ''}"`
+                ].join(','))
+            ].join('\n');
+            
+            downloadFile(csv, `transactions_${currentTimeFilter}_${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
+            toggleExportMenu();
+        }
+        
+        function exportExcel() {
+            const filtered = getFilteredTransactions();
+            if (filtered.length === 0) {
+                alert('No transactions to export');
+                return;
+            }
+            
+            // Create HTML table
+            const headers = ['Date', 'Type', 'Category', 'Description', 'Amount', 'Currency', 'Mileage', 'Fuel Amount', 'Notes'];
+            const html = `
+                <table>
+                    <thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+                    <tbody>
+                        ${filtered.map(t => `
+                            <tr>
+                                <td>${t.date}</td>
+                                <td>${t.type}</td>
+                                <td>${t.category}</td>
+                                <td>${t.description || ''}</td>
+                                <td>${t.amount}</td>
+                                <td>${t.currency || currentCurrency}</td>
+                                <td>${t.mileage || ''}</td>
+                                <td>${t.fuelAmount || ''}</td>
+                                <td>${t.notes || ''}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            downloadFile(html, `transactions_${currentTimeFilter}_${new Date().toISOString().split('T')[0]}.xls`, 'application/vnd.ms-excel');
+            toggleExportMenu();
+        }
+        
+        function exportJSON() {
+            const filtered = getFilteredTransactions();
+            if (filtered.length === 0) {
+                alert('No transactions to export');
+                return;
+            }
+            
+            const json = JSON.stringify(filtered, null, 2);
+            downloadFile(json, `transactions_${currentTimeFilter}_${new Date().toISOString().split('T')[0]}.json`, 'application/json');
+            toggleExportMenu();
+        }
+        
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type: type });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Close export menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const exportDropdown = document.querySelector('.export-dropdown');
+            if (exportDropdown && !exportDropdown.contains(event.target)) {
+                document.getElementById('exportMenu').classList.remove('active');
+            }
+        });
         
         init();
     </script>
