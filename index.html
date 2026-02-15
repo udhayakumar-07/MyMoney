@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Money Tracker Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- React, ReactDOM, and Babel for JSX -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Recharts for charts -->
+    <script src="https://unpkg.com/recharts@2.5.0/dist/Recharts.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } = Recharts;
+
+        // Icon components
+        const PlusCircle = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>;
+        const TrendingUp = ({size = 24}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>;
+        const TrendingDown = ({size = 24}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>;
+        const Fuel = ({size = 24}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 22h12M4 9h10M5 2h8v7H5zM2 13h14v9H2z"/><path d="M18 7v13M16 11h4v3h-4z"/></svg>;
+        const Navigation = ({size = 24}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>;
+        const DollarSign = ({size = 24}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>;
+        const Calendar = ({size = 14}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>;
+        const FileText = ({size = 14}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>;
+        const Trash2 = ({size = 20}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>;
+
+        function MoneyTracker() {
+          const [transactions, setTransactions] = useState(() => {
+            const saved = localStorage.getItem('transactions');
+            return saved ? JSON.parse(saved) : [];
+          });
+          const [showForm, setShowForm] = useState(false);
+          const [filter, setFilter] = useState('all');
+          const [formData, setFormData] = useState({
+            type: 'expense',
+            category: 'food',
+            amount: '',
+            description: '',
+            date: new Date().toISOString().split('T')[0],
+            mileage: '',
+            fuelAmount: '',
+            notes: ''
+          });
+
+          useEffect(() => {
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+          }, [transactions]);
+
+          const categories = {
+            income: ['salary', 'freelance', 'investment', 'gift', 'other'],
+            expense: ['food', 'transport', 'utilities', 'entertainment', 'shopping', 'health', 'education', 'other'],
+            fuel: ['petrol', 'diesel', 'electric']
+          };
+
+          const categoryColors = {
+            salary: '#10b981', freelance: '#059669', investment: '#14b8a6', gift: '#06b6d4',
+            food: '#f59e0b', transport: '#3b82f6', utilities: '#8b5cf6', entertainment: '#ec4899',
+            shopping: '#f97316', health: '#ef4444', education: '#6366f1', petrol: '#dc2626',
+            diesel: '#7c2d12', electric: '#65a30d', other: '#6b7280'
+          };
+
+          const handleSubmit = (e) => {
+            e.preventDefault();
+            const newTransaction = {
+              id: Date.now(),
+              ...formData,
+              amount: parseFloat(formData.amount),
+              mileage: formData.mileage ? parseFloat(formData.mileage) : null,
+              fuelAmount: formData.fuelAmount ? parseFloat(formData.fuelAmount) : null
+            };
+            setTransactions([newTransaction, ...transactions]);
+            setFormData({
+              type: 'expense',
+              category: 'food',
+              amount: '',
+              description: '',
+              date: new Date().toISOString().split('T')[0],
+              mileage: '',
+              fuelAmount: '',
+              notes: ''
+            });
+            setShowForm(false);
+          };
+
+          const deleteTransaction = (id) => {
+            if (confirm('Are you sure you want to delete this transaction?')) {
+              setTransactions(transactions.filter(t => t.id !== id));
+            }
+          };
+
+          const filteredTransactions = transactions.filter(t => 
+            filter === 'all' ? true : t.type === filter
+          );
+
+          const totalIncome = transactions
+            .filter(t => t.type === 'income')
+            .reduce((sum, t) => sum + t.amount, 0);
+
+          const totalExpense = transactions
+            .filter(t => t.type === 'expense' || t.type === 'fuel')
+            .reduce((sum, t) => sum + t.amount, 0);
+
+          const totalFuel = transactions
+            .filter(t => t.type === 'fuel')
+            .reduce((sum, t) => sum + t.amount, 0);
+
+          const totalMileage = transactions
+            .filter(t => t.mileage)
+            .reduce((sum, t) => sum + t.mileage, 0);
+
+          const balance = totalIncome - totalExpense;
+
+          const categoryData = Object.keys(categoryColors).map(cat => {
+            const total = transactions
+              .filter(t => t.category === cat)
+              .reduce((sum, t) => sum + t.amount, 0);
+            return { name: cat, value: total, color: categoryColors[cat] };
+          }).filter(d => d.value > 0);
+
+          const monthlyData = transactions.reduce((acc, t) => {
+            const month = t.date.substring(0, 7);
+            if (!acc[month]) {
+              acc[month] = { month, income: 0, expense: 0, fuel: 0 };
+            }
+            if (t.type === 'income') acc[month].income += t.amount;
+            else if (t.type === 'fuel') acc[month].fuel += t.amount;
+            else acc[month].expense += t.amount;
+            return acc;
+          }, {});
+
+          const monthlyTrend = Object.values(monthlyData).sort((a, b) => a.month.localeCompare(b.month));
+
+          const categoryBarData = categoryData.map(d => ({
+            category: d.name.charAt(0).toUpperCase() + d.name.slice(1),
+            amount: d.value
+          }));
+
+          return (
+            <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 p-4 md:p-8">
+              <div className="max-w-7xl mx-auto">
+                <div className="text-center mb-8">
+                  <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-3">
+                    <DollarSign size={48} />
+                    Money Tracker Pro
+                  </h1>
+                  <p className="text-gray-600">Track your income, expenses, fuel, and mileage</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                  <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl p-6 text-white shadow-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <TrendingUp size={32} />
+                      <span className="text-sm opacity-90">Total Income</span>
+                    </div>
+                    <p className="text-3xl font-bold">${totalIncome.toFixed(2)}</p>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl p-6 text-white shadow-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <TrendingDown size={32} />
+                      <span className="text-sm opacity-90">Total Expenses</span>
+                    </div>
+                    <p className="text-3xl font-bold">${totalExpense.toFixed(2)}</p>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 text-white shadow-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <Fuel size={32} />
+                      <span className="text-sm opacity-90">Fuel Spent</span>
+                    </div>
+                    <p className="text-3xl font-bold">${totalFuel.toFixed(2)}</p>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl p-6 text-white shadow-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <Navigation size={32} />
+                      <span className="text-sm opacity-90">Total Mileage</span>
+                    </div>
+                    <p className="text-3xl font-bold">{totalMileage.toFixed(1)} mi</p>
+                  </div>
+                </div>
+
+                <div className={`rounded-2xl p-6 mb-8 shadow-lg ${balance >= 0 ? 'bg-gradient-to-r from-green-400 to-blue-500' : 'bg-gradient-to-r from-orange-400 to-red-500'} text-white`}>
+                  <h2 className="text-2xl font-bold mb-2">Current Balance</h2>
+                  <p className="text-4xl font-bold">${balance.toFixed(2)}</p>
+                </div>
+
+                {monthlyTrend.length > 0 && (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div className="bg-white rounded-2xl p-6 shadow-lg">
+                      <h3 className="text-xl font-bold text-gray-800 mb-4">Monthly Trend</h3>
+                      <ResponsiveContainer width="100%" height={300}>
+                        <LineChart data={monthlyTrend}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="month" />
+                          <YAxis />
+                          <Tooltip />
+                          <Legend />
+                          <Line type="monotone" dataKey="income" stroke="#10b981" strokeWidth={3} />
+                          <Line type="monotone" dataKey="expense" stroke="#ef4444" strokeWidth={3} />
+                          <Line type="monotone" dataKey="fuel" stroke="#f59e0b" strokeWidth={3} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+
+                    {categoryData.length > 0 && (
+                      <div className="bg-white rounded-2xl p-6 shadow-lg">
+                        <h3 className="text-xl font-bold text-gray-800 mb-4">Spending by Category</h3>
+                        <ResponsiveContainer width="100%" height={300}>
+                          <PieChart>
+                            <Pie
+                              data={categoryData}
+                              cx="50%"
+                              cy="50%"
+                              labelLine={false}
+                              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                              outerRadius={100}
+                              fill="#8884d8"
+                              dataKey="value"
+                            >
+                              {categoryData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} />
+                              ))}
+                            </Pie>
+                            <Tooltip />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
+                    )}
+
+                    {categoryBarData.length > 0 && (
+                      <div className="bg-white rounded-2xl p-6 shadow-lg lg:col-span-2">
+                        <h3 className="text-xl font-bold text-gray-800 mb-4">Category Breakdown</h3>
+                        <ResponsiveContainer width="100%" height={300}>
+                          <BarChart data={categoryBarData}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="category" />
+                            <YAxis />
+                            <Tooltip />
+                            <Bar dataKey="amount" fill="#8b5cf6" radius={[8, 8, 0, 0]} />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="flex justify-center mb-6">
+                  <button
+                    onClick={() => setShowForm(!showForm)}
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition flex items-center gap-2"
+                  >
+                    <PlusCircle />
+                    Add Transaction
+                  </button>
+                </div>
+
+                {showForm && (
+                  <div className="bg-white rounded-2xl p-6 shadow-lg mb-8">
+                    <h3 className="text-2xl font-bold text-gray-800 mb-4">New Transaction</h3>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 mb-2">Type</label>
+                          <select
+                            value={formData.type}
+                            onChange={(e) => setFormData({ ...formData, type: e.target.value, category: categories[e.target.value][0] })}
+                            className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-purple-500 focus:outline-none"
+                          >
+                            <option value="income">Income</option>
+                            <option value="expense">Expense</option>
+                            <option value="fuel">Fuel</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
+                          <select
+                            value={formData.category}
+                            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                            className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-purple-500 focus:outline-none"
+                          >
+                            {categories[formData.type].map(cat => (
+                              <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 mb-2">Amount ($)</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            required
+                            value={formData.amount}
+                            onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                            className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-purple-500 focus:outline-none"
+                            placeholder="0.00"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 mb-2">Date</label>
+                          <input
+                            type="date"
+                            required
+                            value={formData.date}
+                            onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                            className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-purple-500 focus:outline-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+                          <input
+                            type="text"
+                            value={formData.description}
+                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                            className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-purple-500 focus:outline-none"
+                            placeholder="e.g., Groceries, Salary, Gas station"
+                          />
+                        </div>
+
+                        {formData.type === 'fuel' && (
+                          <>
+                            <div>
+                              <label className="block text-sm font-semibold text-gray-700 mb-2">Mileage (mi)</label>
+                              <input
+                                type="number"
+                                step="0.1"
+                                value={formData.mileage}
+                                onChange={(e) => setFormData({ ...formData, mileage: e.target.value })}
+                                className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-purple-500 focus:outline-none"
+                                placeholder="0.0"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-semibold text-gray-700 mb-2">Fuel Amount (gal)</label>
+                              <input
+                                type="number"
+                                step="0.01"
+                                value={formData.fuelAmount}
+                                onChange={(e) => setFormData({ ...formData, fuelAmount: e.target.value })}
+                                className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-purple-500 focus:outline-none"
+                                placeholder="0.00"
+                              />
+                            </div>
+                          </>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Notes</label>
+                        <textarea
+                          value={formData.notes}
+                          onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                          className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-purple-500 focus:outline-none"
+                          rows="3"
+                          placeholder="Add any additional notes..."
+                        />
+                      </div>
+
+                      <div className="flex gap-4">
+                        <button
+                          type="submit"
+                          className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-lg font-bold hover:shadow-lg transition"
+                        >
+                          Add Transaction
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setShowForm(false)}
+                          className="px-6 py-3 rounded-lg border-2 border-gray-300 font-bold text-gray-700 hover:bg-gray-50 transition"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                )}
+
+                <div className="flex gap-2 mb-6 flex-wrap justify-center">
+                  <button
+                    onClick={() => setFilter('all')}
+                    className={`px-6 py-2 rounded-full font-semibold transition ${filter === 'all' ? 'bg-purple-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
+                  >
+                    All
+                  </button>
+                  <button
+                    onClick={() => setFilter('income')}
+                    className={`px-6 py-2 rounded-full font-semibold transition ${filter === 'income' ? 'bg-green-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
+                  >
+                    Income
+                  </button>
+                  <button
+                    onClick={() => setFilter('expense')}
+                    className={`px-6 py-2 rounded-full font-semibold transition ${filter === 'expense' ? 'bg-red-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
+                  >
+                    Expenses
+                  </button>
+                  <button
+                    onClick={() => setFilter('fuel')}
+                    className={`px-6 py-2 rounded-full font-semibold transition ${filter === 'fuel' ? 'bg-orange-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
+                  >
+                    Fuel
+                  </button>
+                </div>
+
+                <div className="bg-white rounded-2xl p-6 shadow-lg">
+                  <h3 className="text-2xl font-bold text-gray-800 mb-4">Transaction History</h3>
+                  {filteredTransactions.length === 0 ? (
+                    <p className="text-center text-gray-500 py-8">No transactions yet. Add your first one!</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {filteredTransactions.map(transaction => (
+                        <div
+                          key={transaction.id}
+                          className="flex items-center justify-between p-4 rounded-xl border-2 border-gray-100 hover:border-purple-200 hover:shadow-md transition"
+                          style={{ borderLeftWidth: '6px', borderLeftColor: categoryColors[transaction.category] }}
+                        >
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-bold text-gray-800">{transaction.description || transaction.category}</span>
+                              <span
+                                className="px-3 py-1 rounded-full text-xs font-semibold text-white"
+                                style={{ backgroundColor: categoryColors[transaction.category] }}
+                              >
+                                {transaction.category}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-4 text-sm text-gray-600">
+                              <span className="flex items-center gap-1">
+                                <Calendar size={14} />
+                                {transaction.date}
+                              </span>
+                              {transaction.mileage && (
+                                <span className="flex items-center gap-1">
+                                  <Navigation size={14} />
+                                  {transaction.mileage} mi
+                                </span>
+                              )}
+                              {transaction.fuelAmount && (
+                                <span className="flex items-center gap-1">
+                                  <Fuel size={14} />
+                                  {transaction.fuelAmount} gal
+                                </span>
+                              )}
+                            </div>
+                            {transaction.notes && (
+                              <p className="text-sm text-gray-500 mt-1 flex items-start gap-1">
+                                <FileText size={14} />
+                                {transaction.notes}
+                              </p>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <span className={`text-2xl font-bold ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                              {transaction.type === 'income' ? '+' : '-'}${transaction.amount.toFixed(2)}
+                            </span>
+                            <button
+                              onClick={() => deleteTransaction(transaction.id)}
+                              className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition"
+                            >
+                              <Trash2 size={20} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<MoneyTracker />);
+    </script>
+</body>
+</html>
